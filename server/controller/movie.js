@@ -37,13 +37,12 @@ let handleGetAllMovies = async (req, res) => {
 let handleAddMovie = async (req, res) => {
     const {
         movieName,
-        releaseDate,
-        averageRating
+        releaseDate
     } = req.body;
 
     try {
         // Insert new movie into details_of_movies table
-        let query = `INSERT INTO details_of_movies (movie_name, release_date, average_rating) VALUES("${movieName}", "${releaseDate}", "${averageRating}")`;
+        let query = `INSERT INTO details_of_movies (movie_name, release_date, average_rating) VALUES("${movieName}", "${releaseDate}", "4.00")`;
 
         connection.query(query, (err, results) => {
             if (err) {

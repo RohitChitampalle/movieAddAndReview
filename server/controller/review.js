@@ -52,7 +52,14 @@ let handleAddReview = async (req, res) => {
     } = req.body;
 
     try {
-        // Query to insert a new movie review
+        // Check if movie_id is defined and is a valid value
+        if (movie_id === undefined || isNaN(movie_id)) {
+            return res.status(400).json({
+                error: 'Invalid movie_id'
+            });
+        }
+
+        // Continue with the query
         let query = `INSERT INTO movie_reviews (movie_id, reviewer_name, rating, review_comments)
                      VALUES("${movie_id}", "${reviewer_name}", "${rating}", "${review_comments}")`;
 
@@ -77,6 +84,37 @@ let handleAddReview = async (req, res) => {
         });
     }
 };
+
+
+// Get specific movie data by ID
+let handleReviewSpecificData = async (req, res) => {
+    const movieId = req.params.id;
+
+    try {
+        // Query to fetch a specific movie by ID
+        let query = `SELECT * FROM movie_reviews WHERE movie_id =${movieId}`;
+        connection.query(query, (err, results) => {
+            if (results.length === 0) {
+                return res.status(404).json({
+                    error: 'Review not found.'
+                });
+            }
+            if (err) {
+                console.error('Error querying database:', err);
+                return res.status(501).json([{
+                    "Error": err.sqlMessage
+                }]);
+            }
+            return res.status(201).json(results);
+        });
+    } catch (error) {
+        console.error('Error fetching a movie:', error);
+        res.status(500).json({
+            error: 'Internal Server Error'
+        });
+    }
+}
+
 
 /**
  * Handles updating an existing movie review.
@@ -165,5 +203,6 @@ module.exports = {
     handleAllReview,
     handleAddReview,
     handleUpdateReview,
-    handleDeleteReview
+    handleDeleteReview,
+    handleReviewSpecificData
 };
